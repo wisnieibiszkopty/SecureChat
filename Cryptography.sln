@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cryptography", "Cryptography\Cryptography.csproj", "{34036FD5-F8E6-4DC8-9EC5-01C3D44E0F54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureChat", "SecureChat\SecureChat.csproj", "{D3301210-3EEB-4116-B041-5E0D189F5385}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{34036FD5-F8E6-4DC8-9EC5-01C3D44E0F54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34036FD5-F8E6-4DC8-9EC5-01C3D44E0F54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34036FD5-F8E6-4DC8-9EC5-01C3D44E0F54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3301210-3EEB-4116-B041-5E0D189F5385}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3301210-3EEB-4116-B041-5E0D189F5385}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3301210-3EEB-4116-B041-5E0D189F5385}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3301210-3EEB-4116-B041-5E0D189F5385}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

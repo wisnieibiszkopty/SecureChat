@@ -1,4 +1,6 @@
-﻿using Cryptography.Crypto;
+﻿using System.Text;
+using Cryptography.Crypto;
+using Cryptography.PKI.Services;
 
 ICryptoService cryptoService = new CryptoService();
 
@@ -10,7 +12,7 @@ using var key = cryptoService.GenerateSymmetricKey();
 var encryptedSymmetric = cryptoService.EncryptSymmetric(message, key);
 var decryptedSymmetric = cryptoService.DecryptSymmetric(encryptedSymmetric, key);
 
-Console.WriteLine("=== Szyfrowanie symetryczne ===");
+WriteTitle("Szyfrowanie symetryczne");
 
 Console.WriteLine("Tekst do zaszyfrowania: " + message);
 Console.WriteLine("Zaszyfrowane dane (base64): " + Convert.ToBase64String(encryptedSymmetric));
@@ -28,7 +30,7 @@ var encryptedAsymmetricToBob = cryptoService
 var decryptedAsymmetricToBob = cryptoService
     .DecryptAsymmetric(encryptedAsymmetricToBob, aliceKeyPair.PublicKey, bobKeyPair.PrivateKey);
 
-Console.WriteLine("=== Szyfrowanie Asymetryczne ===");
+WriteTitle("Szyfrowanie Asymetryczne");
 
 Console.WriteLine($"Tekst do zaszyfrowania: {messageToBob}");
 Console.WriteLine($"Zaszyfrowane dane (base64): {Convert.ToBase64String(encryptedAsymmetricToBob)}");
@@ -43,7 +45,7 @@ Console.WriteLine($"Tekst do zaszyfrowania: {messageToAlice}");
 Console.WriteLine($"Zaszyfrowane dane (base64): {Convert.ToBase64String(encryptedAsymmetricToAlice)}");
 Console.WriteLine($"Odszyfrowane dane: {decryptedAsymmetricToAlice}");
 
-//SZYFROWANIE HYBRYDOWE
+//HYBRID CRYPTOGRAPHY
 string filepath = "Crypto/Resources/message.txt";
 Console.WriteLine("Ścieżka pliku do zaszyfrowania: " + filepath);
 
@@ -53,3 +55,28 @@ Console.WriteLine("Ścieżka zaszyfrowanego pliku: " + encryptedFilePath);
 var decryptedFilePath = cryptoService.DecryptFileSecretStream(encryptedFilePath, aliceKeyPair.PublicKey, bobKeyPair.PrivateKey);
 Console.WriteLine("Ścieżka odszyfrowanego pliku: " + decryptedFilePath);
 
+// PKI SIGNATURE
+WriteTitle("PKI Signature");
+
+var pkiService = new PKIService();
+using var keyPair = pkiService.GenerateSigningKeyPair();
+
+var pkiMessage = "Test PKI message";
+var messageBytes = Encoding.UTF8.GetBytes(pkiMessage);
+
+Console.WriteLine($"Message: {pkiMessage}");
+
+var signature = pkiService.SignData(messageBytes, keyPair.PrivateKey);
+
+Console.WriteLine($"Signature: {Convert.ToBase64String(signature)}");
+
+var isValid = pkiService.VerifySignature(messageBytes, signature, keyPair.PublicKey);
+
+Console.WriteLine($"Is signature valid? {isValid}");
+
+void WriteTitle(string text)
+{
+    Console.ForegroundColor = ConsoleColor.DarkGreen;
+    Console.WriteLine($"=== {text} ===");
+    Console.ForegroundColor = ConsoleColor.White;
+}

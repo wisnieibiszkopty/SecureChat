@@ -4,7 +4,7 @@ using LibSodium;
 
 namespace Cryptography.Crypto;
 
-internal class CryptoService : ICryptoService
+public class CryptoService : ICryptoService
 {
     public SecureMemory<byte> GenerateSymmetricKey()
     { 

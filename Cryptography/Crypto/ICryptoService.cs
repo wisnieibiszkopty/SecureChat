@@ -3,7 +3,7 @@ using LibSodium;
 
 namespace Cryptography.Crypto;
 
-internal interface ICryptoService
+public interface ICryptoService
 {
         // Symmetric Cryptography
         SecureMemory<byte> GenerateSymmetricKey();

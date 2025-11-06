@@ -2,8 +2,32 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:SecureChat.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SecureChat.Views.ChatWindow"
-        Title="ChatWindow">
-    Welcome to Avalonia!
+        x:DataType="views:ChatWindow"
+        Title="ChatWindow"
+        WindowStartupLocation="CenterScreen"
+        Width="600"
+        Height="400">
+    <StackPanel Margin="20" Spacing="8">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="8">
+            <TextBlock>Receiver: </TextBlock>
+            <ComboBox x:Name="recipientsComboBox" SelectedIndex="0" 
+                      Width="200" MaxDropDownHeight="300"
+                      ItemsSource="{Binding Recipients}"
+                      SelectedValue="{Binding SelectedRecipient}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Username}"></TextBlock>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+        <TextBox Height="260" IsReadOnly="True"></TextBox>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBox x:Name="Message" Width="420"></TextBox>
+            <Button Click="SendMessage">Send</Button>
+        </StackPanel>
+    </StackPanel>
 </Window>

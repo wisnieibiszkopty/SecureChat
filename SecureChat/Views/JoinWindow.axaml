@@ -8,6 +8,7 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="Join Secure Chat"
+        WindowStartupLocation="CenterScreen"
         Width="500"
         Height="300">
 

@@ -22,6 +22,7 @@ public partial class JoinWindow : Window
         if (usernameText != null)
         {
             JoinToChat(usernameText);
+            Username.Text = "";
         }
     }
 

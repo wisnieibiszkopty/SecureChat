@@ -17,7 +17,6 @@ public partial class JoinWindow : Window
 
     private void OnClick(object? sender, RoutedEventArgs e)
     {
-        Debug.WriteLine("Kliknieto przycisk");
         string? usernameText = Username.Text;
         if (usernameText != null)
         {

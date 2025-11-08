@@ -1,19 +1,21 @@
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using SecureChat.Context;
 using SecureChat.Models;
+using AppContext = SecureChat.Context.AppContext;
 
 namespace SecureChat.Views;
 
 public partial class ChatWindow : Window
 {
     private readonly UserContext _currentUser;
-    private string _message;
  
-    public string? SelectedRecipient { get; set; }
-    public List<UserContext> Recipients { get; set; } = new();
+    public UserContext? SelectedRecipient { get; set; }
+    public ObservableCollection<UserContext> Recipients { get; set; } = new();
     
     public ChatWindow(UserContext user)
     {
@@ -41,12 +43,59 @@ public partial class ChatWindow : Window
     
     public void SendMessage(object? sender, RoutedEventArgs e)
     {
+        string? message = Message.Text;
+        if (message == null)
+        {
+            new ToastWindow("Message cannot be empty!").Show();
+            return;
+        }
         
+        if (SelectedRecipient == null)
+        {
+            new ToastWindow("Recipient is not selected").Show();
+            return;
+        }
+
+        var recipient = AppContext.Users.FirstOrDefault(u => u.Username == SelectedRecipient.Username);
+        if (recipient == null)
+        {
+            new ToastWindow("Recipient does not exists!").Show();
+            return;
+        }
+
+        var ciphertext = AppContext.CryptoService.EncryptAsymmetric(
+            message,
+            recipient.EncryptionKeys.PublicKey,
+            _currentUser.EncryptionKeys.PrivateKey
+        );
+        
+        var signature = AppContext.PkiService.SignData(
+            Encoding.UTF8.GetBytes(message),
+            _currentUser.SigningKeys.PrivateKey
+        );
+        
+        var chatMessage = new ChatMessage
+        {
+            Sender = _currentUser.Username,
+            Recipient = SelectedRecipient.Username,
+            Ciphertext = ciphertext,
+            Signature = signature
+        };
+        
+        AppContext.SendMessage(chatMessage);
+        
+        Message.Text = "";
     }
 
     private void HandleIncomingMessage(ChatMessage message)
     {
+        if (message.Recipient != _currentUser.Username)
+        {
+            return;
+        }
         
+        Debug.WriteLine(message.Ciphertext);
+        Debug.WriteLine(message.Recipient);
     }
 
     private void AddRecipientDynamic(UserContext newUser)
@@ -58,9 +107,8 @@ public partial class ChatWindow : Window
 
         if (!Recipients.Select(r => r.Username).Contains(newUser.Username))
         {
-            // TODO new user cannot be selected
             Recipients.Add(newUser);
-            SelectedRecipient = newUser.Username;
+            SelectedRecipient = newUser;
         }
     }
 

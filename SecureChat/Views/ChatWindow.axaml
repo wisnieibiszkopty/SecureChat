@@ -13,7 +13,7 @@
     <StackPanel Margin="20" Spacing="8">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="8">
             <TextBlock>Receiver: </TextBlock>
-            <ComboBox x:Name="recipientsComboBox" SelectedIndex="0" 
+            <ComboBox x:Name="recipientsComboBox"
                       Width="200" MaxDropDownHeight="300"
                       ItemsSource="{Binding Recipients}"
                       SelectedValue="{Binding SelectedRecipient}">

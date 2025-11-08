@@ -27,8 +27,6 @@ public class CertificateAuthorityService : ICertificateAuthorityService
         _rootCertificate = GenerateRootCertificate();
     }
     
-    public byte[] GetPublicKey() => _keyPair.PublicKey;
-    
     private X509Certificate GenerateRootCertificate()
     {
         var cert = new X509Certificate

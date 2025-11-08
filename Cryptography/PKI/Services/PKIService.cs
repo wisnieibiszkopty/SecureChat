@@ -19,7 +19,6 @@ public class PKIService : IPKIService
     public byte[] SignData(byte[] data, SecureMemory<byte> privateKey)
     {
         byte[] signature = new byte[CryptoSign.SignatureLen];
-
         CryptoSign.Sign(data, signature, privateKey);
 
         return signature;

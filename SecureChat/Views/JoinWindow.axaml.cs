@@ -18,7 +18,7 @@ public partial class JoinWindow : Window
     private void OnClick(object? sender, RoutedEventArgs e)
     {
         string? usernameText = Username.Text;
-        if (usernameText != null)
+        if (!String.IsNullOrEmpty(usernameText))
         {
             JoinToChat(usernameText);
             Username.Text = "";

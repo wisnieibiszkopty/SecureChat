@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -41,10 +42,24 @@ public partial class ChatWindow : Window
         }
     }
     
+    private void AddRecipientDynamic(UserContext newUser)
+    {
+        if (newUser.Username == _currentUser.Username)
+        {
+            return;
+        }
+
+        if (!Recipients.Select(r => r.Username).Contains(newUser.Username))
+        {
+            Recipients.Add(newUser);
+            SelectedRecipient = newUser;
+        }
+    }
+    
     public void SendMessage(object? sender, RoutedEventArgs e)
     {
         string? message = Message.Text;
-        if (message == null)
+        if (String.IsNullOrEmpty(message))
         {
             new ToastWindow("Message cannot be empty!").Show();
             return;
@@ -93,28 +108,47 @@ public partial class ChatWindow : Window
         {
             return;
         }
-        
-        Debug.WriteLine(message.Ciphertext);
-        Debug.WriteLine(message.Recipient);
-    }
 
-    private void AddRecipientDynamic(UserContext newUser)
-    {
-        if (newUser.Username == _currentUser.Username)
+        var sender = AppContext.Users.FirstOrDefault(u => u.Username == message.Sender);
+        if (sender == null)
         {
             return;
         }
-
-        if (!Recipients.Select(r => r.Username).Contains(newUser.Username))
+        
+        var isCertificateValid = AppContext.CA.VerifyCertificate(sender.Certificate);
+        if (!isCertificateValid)
         {
-            Recipients.Add(newUser);
-            SelectedRecipient = newUser;
+            ShowCertificateWarning();
         }
+        
+        var decryptedMessage = AppContext.CryptoService.DecryptAsymmetric(
+            message.Ciphertext,
+            sender.EncryptionKeys.PublicKey,
+            _currentUser.EncryptionKeys.PrivateKey
+        );
+        
+        Debug.WriteLine(Encoding.UTF8.GetString(message.Ciphertext));
+        Debug.WriteLine(Convert.ToBase64String(message.Signature));
+        
+        var isSignatureValid = AppContext.PkiService.VerifySignature(
+            Encoding.UTF8.GetBytes(decryptedMessage),
+            message.Signature,
+            sender.SigningKeys.PublicKey
+        );
+        
+        AppendToChat(decryptedMessage, isSignatureValid, sender.Username, _currentUser.Username);
     }
 
-    private void AppendToChat(string text)
+    private void ShowCertificateWarning()
     {
-        
+        Chat.Text += "Warning: this user certificate isn't verified!!!" + Environment.NewLine;
+    }
+    
+    private void AppendToChat(string text, bool isSignatureValid, string senderName, string recipientName)
+    {
+        var signatureText = isSignatureValid ? "OK" : "!";
+        var formattedMessage = $"[{senderName} -> {recipientName}](Signature: {signatureText})> {text}";
+        Chat.Text += formattedMessage + Environment.NewLine;
     }
     
     protected override void OnClosing(WindowClosingEventArgs e)

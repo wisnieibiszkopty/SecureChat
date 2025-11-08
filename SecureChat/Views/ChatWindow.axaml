@@ -24,7 +24,7 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
         </StackPanel>
-        <TextBox Height="260" IsReadOnly="True"></TextBox>
+        <TextBox x:Name="Chat" Height="260" IsReadOnly="True"></TextBox>
         <StackPanel Orientation="Horizontal" Spacing="8">
             <TextBox x:Name="Message" Width="420"></TextBox>
             <Button Click="SendMessage">Send</Button>

@@ -9,9 +9,6 @@ using Microsoft.Extensions.Configuration;
 var pepper = PepperAndSaltGenerator.GeneratePepper();
 var salt = PepperAndSaltGenerator.GenerateSalt();
 
-Console.WriteLine($"Pepper: {pepper}");
-Console.WriteLine($"Salt: {salt}");
-
 var memoryConfig = new Dictionary<string, string>
 {
     { "Security:PasswordPepper", pepper },
@@ -23,7 +20,9 @@ var inMemoryConfig = new ConfigurationBuilder()
     .Build();
 
 string retrievedPepper = inMemoryConfig["Security:PasswordPepper"];
+string retrievedSalt = inMemoryConfig["Security:PasswordSalt"];
 Console.WriteLine($"Retrieved Pepper: {retrievedPepper}");
+Console.WriteLine($"Retrieved Pepper: {retrievedSalt}");
 
 var stopwatch = new Stopwatch();
 
@@ -33,15 +32,11 @@ var sha256Hasher = new Sha256Hasher(inMemoryConfig);
 var bcryptHasher = new PasswordHasherBcrypt(inMemoryConfig);
 var scryptHasher = new PasswordHasherScrypt(inMemoryConfig);
 
-var sha256TestResult = PerformanceTest(sha256Hasher, "SHA256");
-var bcryptTestResult = PerformanceTest(bcryptHasher, "Bcrypt");
-var scryptTestResult = PerformanceTest(scryptHasher, "Scrypt");
-
 var testsResults = new List<HashingTestResult>
 {
-    sha256TestResult,
-    bcryptTestResult,
-    scryptTestResult
+    PerformanceTest(sha256Hasher, "SHA256"),
+    PerformanceTest(bcryptHasher, "Bcrypt"),
+    PerformanceTest(scryptHasher, "Scrypt")
 };
 
 PrintResultsAsTable(testsResults);

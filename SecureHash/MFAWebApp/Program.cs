@@ -14,7 +14,18 @@ builder.Services.AddDbContext<AppDbContext>(
 
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasherScrypt>();
 
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddSession(o =>
+{
+    o.Cookie.HttpOnly = true;
+    o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    o.IdleTimeout = TimeSpan.FromMinutes(30);
+});
+
 var app = builder.Build();
+
+app.UseSession();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -1,4 +1,19 @@
-﻿<!DOCTYPE html>
+﻿@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var userId = Context.Session.GetInt32("UserId");
+    string? userEmail = null;
+    
+    if (userId.HasValue)
+    {
+        userEmail = Db.Users
+            .Where(u => u.Id == userId.Value)
+            .Select(u => u.Email)
+            .FirstOrDefault();
+    }
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -26,6 +41,28 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
                     </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    @if (userEmail != null)
+                    {
+                        <a class="nav-link" asp-page="/Account/Manage">
+                            <span class="navbar-text me-3">@userEmail</span>
+                        </a>
+                        <li class="nav-link">
+                            <form method="post" asp-page="/Account/Logout">
+                                <button type="submit" class="btn btn-link nav-link p-0 m-0" style="border:none;background:none;">Logout</button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-page="/Account/Login">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-page="/Account/Register">Register</a>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>
